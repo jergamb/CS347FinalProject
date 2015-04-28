@@ -1,0 +1,95 @@
+drop view user_view ;
+drop view list_view ;
+drop view member_view ;
+
+
+create view user_view as
+SELECT USER_ID, NL_MEMBER_MEMBER_ID, NAME, LAB, DIVISION, STATUS, STATUS_EFF_DATE, TYPE
+FROM NL_USER ;
+
+create or replace TRIGGER admin_trigger
+	INSTEAD OF insert ON user_view
+	FOR EACH ROW
+BEGIN
+	insert into nl_user(
+		USER_ID,
+        NL_MEMBER_MEMBER_ID,
+		NAME,
+		LAB, 
+		DIVISION, 
+		STATUS, 
+		STATUS_EFF_DATE, 
+		TYPE)
+	VALUES (
+		:new.USER_ID,
+        :new.NL_MEMBER_MEMBER_ID,
+		:new.NAME,
+		:new.LAB,
+		:new.DIVISION,
+		:new.STATUS,
+		:new.STATUS_EFF_DATE,
+		:new.TYPE) ;
+END; 
+/
+
+create view member_view as
+SELECT MEMBER_ID, NAME, NL_USER_USER_ID, DESCRIPTION, OWNERSHIP_DIVISION_CODE, EXTERNAL_VIEW_NAME, STATUS_EFF_DATE, STATUS, TYPE
+FROM NL_MEMBER
+WHERE TYPE = 'MEMBER' ;
+
+create or replace TRIGGER member_trigger
+	INSTEAD OF insert on member_view
+	FOR EACH ROW
+BEGIN
+	insert into nl_member(
+		MEMBER_ID, 
+		NAME, 
+		NL_USER_USER_ID, 
+		DESCRIPTION, 
+		OWNERSHIP_DIVISION_CODE, 
+		EXTERNAL_VIEW_NAME, 
+		STATUS_EFF_DATE, 
+		STATUS, 
+		TYPE)
+	VALUES (
+		:new.MEMBER_ID,
+		:new.NAME,
+		:new.NL_USER_USER_ID,
+		:new.DESCRIPTION,
+		:new.OWNERSHIP_DIVISION_CODE,
+		:new.EXTERNAL_VIEW_NAME,
+		:new.STATUS_EFF_DATE,
+		:new.STATUS,
+		'MEMBER') ;
+END;
+/
+
+create view list_view as
+SELECT MEMBER_ID, NAME, DESCRIPTION, OWNERSHIP_DIVISION_CODE, EXTERNAL_VIEW_NAME, STATUS_EFF_DATE, STATUS, TYPE
+FROM NL_MEMBER
+WHERE TYPE = 'LIST' ;
+
+create or replace TRIGGER list_trigger
+	INSTEAD OF insert on list_view
+	FOR EACH ROW
+BEGIN
+	insert into nl_member(
+		MEMBER_ID, 
+		NAME, 
+		DESCRIPTION, 
+		OWNERSHIP_DIVISION_CODE, 
+		EXTERNAL_VIEW_NAME, 
+		STATUS_EFF_DATE, 
+		STATUS, 
+		TYPE)
+	VALUES (
+		:new.MEMBER_ID,
+		:new.NAME,
+		:new.DESCRIPTION,
+		:new.OWNERSHIP_DIVISION_CODE,
+		:new.EXTERNAL_VIEW_NAME,
+		:new.STATUS_EFF_DATE,
+		:new.STATUS,
+		'LIST') ;
+END;
+/
