@@ -19,15 +19,11 @@ Comments:
 		- File for User uploading: 			all_employees.csv
 
 		- DDL files(1-4):					arl.ddl
-
 											arl.ddl2
-
 											arl.ddl3
-
 											arl.ddl4
 
 		- Example Document upload files: 	Upload1.csv
-
 											UPLOAD2.csv
 		
 
